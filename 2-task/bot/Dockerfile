@@ -4,6 +4,8 @@ COPY . /bot
 
 WORKDIR /bot
 
+RUN mkdir -p /bot/logs
+
 RUN apt-get update && apt-get install -y \
     gcc \
     build-essential \

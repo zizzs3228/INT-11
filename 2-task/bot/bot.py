@@ -288,6 +288,9 @@ async def main():
     await dp.start_polling(bot)
 
 if __name__ == "__main__":
+    if not os.path.exists('logs'):
+        os.mkdir('logs')
+    
     info_logger = logging.getLogger("info")
     info_handler = TimedRotatingFileHandler("logs/info.log", when="midnight", interval=1, backupCount=120,errors='replace')
     info_logger.setLevel(logging.INFO)  # Изменено на INFO
