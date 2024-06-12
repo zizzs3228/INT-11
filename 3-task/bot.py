@@ -43,7 +43,7 @@ async def IAM_token_remaker():
                 await asyncio.sleep(10)
                 continue 
         await asyncio.sleep(60*60*2)# каждый час обновлять IAM токен, как в рекомендациях Яндекса
-    info_logger.info('IAM token remaking failed. Exiting...')
+    info_logger.info('IAM token remaking failed. Too many retries. Exiting...')
     
 async def expire_date_stoper():
     global IAM_token
@@ -53,7 +53,7 @@ async def expire_date_stoper():
     cloud_listingURL = 'https://resource-manager.api.cloud.yandex.net/resource-manager/v1/clouds'
     counter = 0
     
-    await asyncio.sleep(10) # Ждём 10 секунд получения IAM токена перед стартом работы
+    await asyncio.sleep(5) # Ждём 5 секунд получения IAM токена перед стартом работы
     
     while counter<=5:
         async with asyncio.Lock(): ## Блокировка, чтобы не было смены IAM токена во время работы
@@ -151,8 +151,8 @@ async def expire_date_stoper():
                                 info_logger.info(f'Instance {instance_id} in folder {folder_id} in cloud {cloud_id} is not expired or not running')
                         else:
                             info_logger.error(f'expire_date or labels not found in instance {ins} in folder {folder_id} in cloud {cloud_id}')        
-        await asyncio.sleep(60)  # Каждый час проверять статус инстансов
-    info_logger.info('expire_date_stoper failed. Exiting...')
+        await asyncio.sleep(60*60)  # Каждый час проверять статус инстансов
+    info_logger.info('expire_date_stoper failed. Too many retries. Exiting...')
                         
 
 async def main():
