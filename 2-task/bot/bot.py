@@ -18,7 +18,7 @@ import os
 TOKEN = os.getenv('TOKEN')
 bot = Bot(TOKEN)
 dp = Dispatcher()
-ADMIN_ID = os.getenv('MAIN_ADMIN')
+ADMIN_ID = int(os.getenv('MAIN_ADMIN'))
 
 DB_HOST = os.getenv('DB_HOST')
 DB_USER = os.getenv('DB_USER')
@@ -99,6 +99,16 @@ async def select_admins(dep:str)->tuple:
     val = (dep,)
     cursor.execute(sql, val)
     result = cursor.fetchall()
+    cursor.close()
+    conn.close()
+    return result
+
+async def select_admin_by_id(user_id:str)->tuple:
+    conn, cursor = await connect()
+    sql = "SELECT * FROM admins_table WHERE USER_ID=%s"
+    val = (user_id,)
+    cursor.execute(sql, val)
+    result = cursor.fetchone()
     cursor.close()
     conn.close()
     return result
@@ -219,8 +229,13 @@ async def FIO_handler(message: Message,state:FSMContext)->None:
     await state.clear()
     info_logger.info(f"Пользователь {message.from_user.username}({message.from_user.id}, {message.from_user.username}) успешно привязал себя к чату отдела {dep}")
 
-@dp.message(F.chat.type=='private',Command('fired'), F.from_user.id==ADMIN_ID)
+@dp.message(F.chat.type=='private',Command('fired'))
 async def fired_handler(message: Message)->None:
+    result = await select_admin_by_id(str(message.from_user.id))
+    if result is None:
+        await message.answer("У вас нет прав на выполнение этой команды")
+        info_logger.info(f"Пользователь {message.from_user.username}({message.from_user.id}, {message.from_user.username}) пытается уволить сотрудника без прав")
+        return None
     spliter = message.text.split(' ')
     if len(spliter)!=2:
         await message.answer("Неправильный формат команды. Пожалуйста, введите команду в формате: /fired user_id")
