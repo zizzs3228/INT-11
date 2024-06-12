@@ -1,0 +1,39 @@
+services:
+  db:
+    container_name: db
+    build:
+      context: ./db
+      args:
+        MAIN_ADMIN: ${MAIN_ADMIN_USER_ID}
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
+      MYSQL_DATABASE: employees
+      MYSQL_USER: ${MYSQL_USER}
+      MYSQL_PASSWORD: ${MYSQL_PASSWORD}
+    command: --character-set-server=utf8mb4 --collation-server=utf8mb4_unicode_ci
+    volumes:
+      - mysql-data:/var/lib/mysql
+  
+  bot:
+    container_name: bot
+    build: ./bot
+    restart: always
+    environment:
+      DB_HOST: db
+      DB_USER: ${MYSQL_USER}
+      DB_PASSWORD: ${MYSQL_PASSWORD}
+      DB_NAME: employees
+      MAIN_ADMIN: ${MAIN_ADMIN_USER_ID}
+      TOKEN: ${TOKEN}
+    depends_on:
+      - db
+    volumes:
+      - ./bot:/bot
+
+
+
+
+
+volumes:
+  mysql-data:

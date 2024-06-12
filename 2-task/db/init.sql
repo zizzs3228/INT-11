@@ -1,0 +1,41 @@
+ALTER DATABASE employees CHARACTER SET = utf8mb4 COLLATE = utf8mb4_unicode_ci;
+
+USE employees;
+
+CREATE TABLE employee_table (
+    ID INT AUTO_INCREMENT PRIMARY KEY,
+    FIO VARCHAR(255) NOT NULL,
+    DEPARTMENT VARCHAR(255) NOT NULL,
+    FIRED BOOLEAN DEFAULT FALSE,
+    USER_ID VARCHAR(255) UNIQUE,
+    USERNAME VARCHAR(255),
+    INDEX(FIO)
+) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
+
+CREATE TABLE IF NOT EXISTS admins_table (
+    ID INT AUTO_INCREMENT PRIMARY KEY,
+    USER_ID VARCHAR(255) UNIQUE,
+    DEPARTMENT VARCHAR(255),
+    INDEX(DEPARTMENT)
+) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
+
+CREATE TABLE IF NOT EXISTS chats_table (
+    ID INT AUTO_INCREMENT PRIMARY KEY,
+    CHAT_ID VARCHAR(255) UNIQUE NOT NULL,
+    DEPARTMENT VARCHAR(255),
+    INDEX(DEPARTMENT)
+) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
+
+
+SET NAMES 'utf8mb4';
+SET CHARACTER SET 'utf8mb4';
+
+
+INSERT INTO employee_table (FIO, DEPARTMENT) VALUES ('Иванов Иван Иванович', 'Отдел кадров');
+INSERT INTO employee_table (FIO, DEPARTMENT) VALUES ('Петров Петр Петрович', 'MaxPatrol');
+INSERT INTO employee_table (FIO, DEPARTMENT) VALUES ('Петров Петр Петрович-1', 'MaxPatrol');
+INSERT INTO employee_table (FIO, DEPARTMENT) VALUES ('Сидоров Сидор Сидорович', 'QA');
+
+INSERT INTO admins_table (USER_ID, DEPARTMENT) VALUES ('MAIN_ADMIN_ID', 'MaxPatrol');
+
+INSERT INTO chats_table (CHAT_ID, DEPARTMENT) VALUES ('-1002233672679', 'MaxPatrol');

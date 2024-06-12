@@ -1,0 +1,8 @@
+services:
+  bot:
+    container_name: bot
+    build: .
+    environment:
+      oAuth: ${oAuth}
+    volumes:
+      - .:/bot
