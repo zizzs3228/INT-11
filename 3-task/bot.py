@@ -48,12 +48,14 @@ async def IAM_token_remaker():
 async def expire_date_stoper():
     global IAM_token
     
+    await asyncio.sleep(10) # Ждём 10 секунд получения IAM токена перед стартом работы
+    
     info_logger.info('Starting expire_date_stoper...')
     headers = {'Authorization': f'Bearer {IAM_token}'}
     cloud_listingURL = 'https://resource-manager.api.cloud.yandex.net/resource-manager/v1/clouds'
     counter = 0
     
-    await asyncio.sleep(10) # Ждём 10 секунд получения IAM токена перед стартом работы
+    
     
     while counter<=5:
         async with asyncio.Lock(): ## Блокировка, чтобы не было смены IAM токена во время работы
