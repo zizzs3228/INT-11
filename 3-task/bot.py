@@ -42,7 +42,7 @@ async def IAM_token_remaker():
                 counter+=1
                 await asyncio.sleep(10)
                 continue 
-        await asyncio.sleep(60*60*2)# каждый час обновлять IAM токен, как в рекомендациях Яндекса
+        await asyncio.sleep(60*60)# каждый час обновлять IAM токен, как в рекомендациях Яндекса
     info_logger.info('IAM token remaking failed. Too many retries. Exiting...')
     
 async def expire_date_stoper():
