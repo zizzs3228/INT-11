@@ -105,8 +105,12 @@ def main():
     merge_requests = get_merge_requests()
     for mr in merge_requests:
         info_logger.info(f'Работаю с запросом {mr}')
-        reviewer_ids = set([x['id'] for x in mr['reviewers']])
-        approved_ids = set(get_approvals(mr['iid']))
+        reviewer_ids = set([x['id'] for x in mr['reviewers']] if mr['reviewers'] is not None else [])
+        approved_ids = get_approvals(mr['iid'])
+        if approved_ids is None:
+            approved_ids = set([])
+        else:
+            approved_ids = set(approved_ids)
         if len(reviewer_ids) == len(approved_ids):
             author_id = mr['author']['id']
             result = select_via_gitlab_id(author_id)
