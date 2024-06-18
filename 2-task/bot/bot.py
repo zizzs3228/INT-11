@@ -165,7 +165,28 @@ async def private_handler(message: Message,state:FSMContext)->None:
     await state.set_state(FIO_INPUT.text)
     info_logger.info(f"Пользователь {message.from_user.username}({message.from_user.id}, {message.from_user.username}) начал процесс привязки сотрудника к чату")
 
-    
+@dp.message(F.chat.type=='private',Command('fired'))
+async def fired_handler(message: Message)->None:
+    result = await select_admin_by_id(str(message.from_user.id))
+    if result is None:
+        await message.answer("У вас нет прав на выполнение этой команды")
+        info_logger.info(f"Пользователь {message.from_user.username}({message.from_user.id}, {message.from_user.username}) пытается уволить сотрудника без прав")
+        return None
+    spliter = message.text.split(' ')
+    if len(spliter)!=2:
+        await message.answer("Неправильный формат команды. Пожалуйста, введите команду в формате: /fired user_id")
+        return None
+    if spliter[1] == '':
+        await message.answer("Неправильный формат команды. Пожалуйста, введите команду в формате: /fired user_id")
+        return None
+    if not spliter[1].isdigit():
+        await message.answer("Неправильный формат команды. Пожалуйста, введите команду в формате: /fired user_id")
+        return None
+    user_id = str(spliter[1])
+    await update_fired(user_id)
+    await message.answer(f"Пользователь с user_id: {user_id} уволен")
+    info_logger.info(f"Пользователь {message.from_user.username}({message.from_user.id}, {message.from_user.username}) уволил сотрудника с user_id: {user_id}")
+
 @dp.message(F.chat.type=='private', FIO_INPUT.text)
 async def FIO_handler(message: Message,state:FSMContext)->None:
     fio_pattern = re.compile(r'[А-ЯЁ][а-яё]+\s[А-ЯЁ][а-яё]+\s[А-ЯЁ][а-яё]+(?:-\d+)?')
@@ -229,27 +250,6 @@ async def FIO_handler(message: Message,state:FSMContext)->None:
     await state.clear()
     info_logger.info(f"Пользователь {message.from_user.username}({message.from_user.id}, {message.from_user.username}) успешно привязал себя к чату отдела {dep}")
 
-@dp.message(F.chat.type=='private',Command('fired'))
-async def fired_handler(message: Message)->None:
-    result = await select_admin_by_id(str(message.from_user.id))
-    if result is None:
-        await message.answer("У вас нет прав на выполнение этой команды")
-        info_logger.info(f"Пользователь {message.from_user.username}({message.from_user.id}, {message.from_user.username}) пытается уволить сотрудника без прав")
-        return None
-    spliter = message.text.split(' ')
-    if len(spliter)!=2:
-        await message.answer("Неправильный формат команды. Пожалуйста, введите команду в формате: /fired user_id")
-        return None
-    if spliter[1] == '':
-        await message.answer("Неправильный формат команды. Пожалуйста, введите команду в формате: /fired user_id")
-        return None
-    if not spliter[1].isdigit():
-        await message.answer("Неправильный формат команды. Пожалуйста, введите команду в формате: /fired user_id")
-        return None
-    user_id = str(spliter[1])
-    await update_fired(user_id)
-    await message.answer(f"Пользователь с user_id: {user_id} уволен")
-    info_logger.info(f"Пользователь {message.from_user.username}({message.from_user.id}, {message.from_user.username}) уволил сотрудника с user_id: {user_id}")
     
 @dp.chat_member(ChatMemberUpdatedFilter(IS_NOT_MEMBER >> MEMBER))
 async def on_user_join(event: ChatMemberUpdated)->None:
