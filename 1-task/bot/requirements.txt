@@ -1,0 +1,4 @@
+aiogram
+schedule
+requests
+mysql.connector-python

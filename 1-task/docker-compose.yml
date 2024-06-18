@@ -1,0 +1,35 @@
+services:
+  db-gitlab:
+    container_name: db
+    build:
+      context: ./db
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
+      MYSQL_DATABASE: gitlab
+      MYSQL_USER: ${MYSQL_USER}
+      MYSQL_PASSWORD: ${MYSQL_PASSWORD}
+    volumes:
+      - mysql-data:/var/lib/mysql
+  
+  bot:
+    container_name: bot
+    build: ./bot
+    restart: always
+    environment:
+      DB_HOST: db-gitlab
+      DB_USER: ${MYSQL_USER}
+      DB_PASSWORD: ${MYSQL_PASSWORD}
+      DB_NAME: gitlab
+      TOKEN: ${TOKEN}
+      GITLAB_URL: ${GITLAB_URL}
+      PROJECT_ID: ${PROJECT_ID}
+      GITLAB_TOKEN: ${GITLAB_TOKEN}
+    depends_on:
+      - db-gitlab
+    volumes:
+      - ./bot:/bot
+
+
+volumes:
+  mysql-data:
